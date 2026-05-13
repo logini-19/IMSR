@@ -1,0 +1,26 @@
+doctor_id,name,specialization,join_date,max_patients_per_day,is_active
+DR001,Dr. Arjun,General Pulmonology,2011-12-01,17,1
+DR002,Dr. Priya,General Pulmonology,2017-11-01,19,1
+DR003,Dr. Karthik,General Pulmonology,2013-12-01,17,1
+DR004,Dr. Meena,Interventional Pulmonology,2022-02-01,14,1
+DR005,Dr. Suresh,Interventional Pulmonology,2021-09-01,15,1
+DR006,Dr. Divya,Sleep Medicine,2021-02-01,18,1
+DR007,Dr. Rajan,Sleep Medicine,2012-01-01,18,1
+DR008,Dr. Anitha,Critical Care,2021-02-01,14,1
+DR009,Dr. Vikram,Critical Care,2017-01-01,18,1
+DR010,Dr. Lakshmi,Critical Care,2021-10-01,15,1
+DR011,Dr. Senthil,Pediatric Pulmonology,2012-09-01,14,1
+DR012,Dr. Kavitha,Pediatric Pulmonology,2016-06-01,18,1
+DR013,Dr. Murugan,TB & Infectious,2012-10-01,18,1
+DR014,Dr. Sowmya,TB & Infectious,2013-05-01,14,1
+DR015,Dr. Balamurugan,TB & Infectious,2015-04-01,14,1
+DR016,Dr. Revathi,General Pulmonology,2017-07-01,14,1
+DR017,Dr. Prasanna,General Pulmonology,2012-01-01,18,1
+DR018,Dr. Nithya,General Pulmonology,2014-01-01,15,1
+DR019,Dr. Venkat,Interventional Pulmonology,2022-04-01,18,1
+DR020,Dr. Saranya,Sleep Medicine,2016-03-01,15,1
+DR021,Dr. Dinesh,Critical Care,2010-09-01,16,1
+DR022,Dr. Padmavathi,General Pulmonology,2016-02-01,18,1
+DR023,Dr. Harish,TB & Infectious,2012-07-01,19,1
+DR024,Dr. Usha,Pediatric Pulmonology,2019-08-01,19,1
+DR025,Dr. Gowtham,General Pulmonology,2012-12-01,17,1
