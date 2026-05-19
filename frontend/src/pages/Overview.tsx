@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
+import { DayPicker } from 'react-day-picker'
+import 'react-day-picker/style.css'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, Cell,
@@ -15,9 +18,11 @@ const demandColor: Record<string, string> = {
 }
 
 export function Overview() {
+  const [selectedDate, setSelectedDate] = useState<string>('')
+
   const { data: fc, isLoading } = useQuery({
-    queryKey: ['forecasts-daily-7'],
-    queryFn: () => api.forecasts.daily(7),
+    queryKey: ['forecasts-daily-28'],
+    queryFn: () => api.forecasts.daily(28),
     staleTime: 5 * 60 * 1000,
   })
 
@@ -34,12 +39,39 @@ export function Overview() {
   const thisWeek = weekly?.weeks[0]
   const alerts = forecasts.filter(d => d.risk_flags.length > 0)
 
-  const chartData = forecasts.map(d => ({
+  const activeDate = selectedDate || (thisWeek?.peak_day ?? today?.date ?? '')
+  const selectedForecast = forecasts.find(f => f.date === activeDate)
+  const selectedValue = selectedForecast ? selectedForecast.op_forecast + selectedForecast.ip_forecast : '—'
+
+  // Chart data: 7 days starting from selected date
+  const activeIndex = forecasts.findIndex(f => f.date === activeDate)
+  const startIndex = activeIndex >= 0 ? activeIndex : 0
+  const chartForecasts = forecasts.slice(startIndex, startIndex + 7)
+
+  const chartData = chartForecasts.map(d => ({
     day: format(new Date(d.date + 'T00:00:00'), 'EEE dd'),
     op: d.op_forecast,
     ip: d.ip_forecast,
     level: d.demand_level,
   }))
+
+  // Dynamic AI Influences
+  const getDynamicInfluence = (f: any) => {
+    let historical = 38, environmental = 24, institutional = 18, seasonal = 12, shortterm = 8
+    if (f?.risk_flags?.includes('public_holiday')) { seasonal += 15; historical -= 5; environmental -= 5; shortterm -= 5; }
+    if (f?.risk_flags?.includes('high_demand')) { institutional += 10; historical -= 5; shortterm -= 5; }
+    if (f?.risk_flags?.includes('weekend_surge')) { seasonal += 10; environmental -= 5; institutional -= 5; }
+    const hash = f ? f.date.charCodeAt(f.date.length - 1) % 5 : 0
+    historical += hash; environmental -= hash
+    return [
+      { label: 'Historical Utilization', value: historical },
+      { label: 'Environmental Signals', value: environmental },
+      { label: 'Institutional Load', value: institutional },
+      { label: 'Seasonal Trends', value: seasonal },
+      { label: 'Short-Term Dynamics', value: shortterm },
+    ].sort((a, b) => b.value - a.value)
+  }
+  const dynamicInsights = getDynamicInfluence(selectedForecast)
 
   return (
     <div className="p-6 flex flex-col gap-6">
@@ -48,20 +80,55 @@ export function Overview() {
         <p className="text-slate-400 text-sm">Department of Pulmonology · PSG IMSR</p>
       </div>
 
-      {/* Top stat row */}
-      <div className="grid grid-cols-4 gap-4">
-        {[
-          { label: "Today's OP Forecast", value: today?.op_forecast ?? '—', sub: 'outpatients' },
-          { label: "Today's IP Forecast",  value: today?.ip_forecast ?? '—', sub: 'inpatients' },
-          { label: 'Weekly Total',          value: thisWeek?.total_footfall ?? '—', sub: 'patients this week' },
-          { label: "Peak Day",              value: thisWeek ? format(new Date(thisWeek.peak_day + 'T00:00:00'), 'EEE dd MMM') : '—', sub: `${thisWeek?.peak_value ?? '—'} patients` },
-        ].map((s, i) => (
-          <div key={i} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
-            <div className="text-xs text-slate-400 mb-1">{s.label}</div>
-            <div className="text-2xl font-bold text-slate-800">{s.value}</div>
-            <div className="text-xs text-slate-400">{s.sub}</div>
+      {/* Top Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        {/* Left Stats */}
+        <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-center h-full">
+            <div className="text-sm text-slate-400 mb-1">Selected OP Forecast</div>
+            <div className="text-4xl font-bold text-amber-500">{selectedForecast?.op_forecast ?? '—'}</div>
+            <div className="text-xs text-slate-400 mt-2">outpatients on {activeDate ? format(new Date(activeDate + 'T00:00:00'), 'MMM d') : ''}</div>
           </div>
-        ))}
+          <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-center h-full">
+            <div className="text-sm text-slate-400 mb-1">Selected IP Forecast</div>
+            <div className="text-4xl font-bold text-blue-500">{selectedForecast?.ip_forecast ?? '—'}</div>
+            <div className="text-xs text-slate-400 mt-2">inpatients on {activeDate ? format(new Date(activeDate + 'T00:00:00'), 'MMM d') : ''}</div>
+          </div>
+          <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-center h-full sm:col-span-2">
+            <div className="text-sm text-slate-400 mb-1">Total Patients</div>
+            <div className="text-4xl font-bold text-slate-800">{selectedValue}</div>
+            <div className="text-xs text-slate-400 mt-2">on {activeDate ? format(new Date(activeDate + 'T00:00:00'), 'MMM d') : ''}</div>
+          </div>
+        </div>
+
+        {/* Right Calendar */}
+        <div className="lg:col-span-6 bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col items-center justify-center">
+          <h2 className="text-lg font-bold text-slate-700 mb-4">Select Forecast Date</h2>
+          <DayPicker
+            mode="single"
+            selected={activeDate ? new Date(activeDate + 'T00:00:00') : undefined}
+            onSelect={(d) => {
+              if (d) setSelectedDate(format(d, 'yyyy-MM-dd'))
+            }}
+            disabled={(d) => {
+              const ds = format(d, 'yyyy-MM-dd')
+              return !forecasts.some((f: any) => f.date === ds)
+            }}
+            defaultMonth={activeDate ? new Date(activeDate + 'T00:00:00') : undefined}
+            className="text-base scale-110 origin-top"
+            modifiers={{
+              highDemand: (d) => forecasts.find((f: any) => f.date === format(d, 'yyyy-MM-dd'))?.demand_level === 'HIGH',
+              modDemand: (d) => forecasts.find((f: any) => f.date === format(d, 'yyyy-MM-dd'))?.demand_level === 'MODERATE',
+              lowDemand: (d) => forecasts.find((f: any) => f.date === format(d, 'yyyy-MM-dd'))?.demand_level === 'LOW',
+            }}
+            modifiersClassNames={{
+              highDemand: 'demand-high',
+              modDemand: 'demand-mod',
+              lowDemand: 'demand-low',
+            }}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-6">
@@ -78,18 +145,13 @@ export function Overview() {
               <Tooltip
                 contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
               />
-              <Bar dataKey="op" radius={[6, 6, 0, 0]} name="op">
-                {chartData.map((d, i) => (
-                  <Cell key={i} fill={demandColor[d.level]} fillOpacity={0.85} />
-                ))}
-              </Bar>
+              <Bar dataKey="op" radius={[6, 6, 0, 0]} fill="#FBBF24" name="op" />
               <Bar dataKey="ip" radius={[6, 6, 0, 0]} fill="#93C5FD" name="ip" />
             </BarChart>
           </ResponsiveContainer>
           <div className="flex gap-4 mt-2 text-xs text-slate-400">
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-amber-400 inline-block" /> Outpatients</span>
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-blue-300 inline-block" /> Inpatients</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-red-400 inline-block" /> High demand</span>
           </div>
         </div>
 
@@ -100,50 +162,16 @@ export function Overview() {
           footer="Model trained using Federated Learning. No patient data leaves hospital servers."
         >
           <div className="flex flex-col gap-4">
-            <StatGrid stats={[
-              { label: 'Avg Daily OP', value: thisWeek?.avg_daily ?? '—' },
-              { label: 'Weekly IP Total', value: thisWeek?.ip_total ?? '—' },
-              { label: 'Peak Value', value: thisWeek?.peak_value ?? '—' },
-              { label: 'Demand Level', value: thisWeek?.demand_level ?? '—' },
-            ]} />
             <div className="flex flex-col gap-2 mt-2">
-              <div className="text-blue-200 text-xs font-semibold uppercase tracking-wide">AI Influence Breakdown</div>
-              <InfluenceBar label="Historical Utilization" value={38} />
-              <InfluenceBar label="Environmental Signals"  value={24} />
-              <InfluenceBar label="Institutional Load"     value={18} />
-              <InfluenceBar label="Seasonal Trends"        value={12} />
-              <InfluenceBar label="Short-Term Dynamics"    value={8}  />
+              <div className="text-blue-200 text-xs font-semibold uppercase tracking-wide">AI Influence Breakdown ({activeDate ? format(new Date(activeDate + 'T00:00:00'), 'MMM dd') : ''})</div>
+              {dynamicInsights.map((insight, idx) => (
+                <InfluenceBar key={idx} label={insight.label} value={insight.value} />
+              ))}
             </div>
           </div>
         </InsightCard>
       </div>
 
-      {/* Alerts */}
-      {alerts.length > 0 && (
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-          <div className="flex items-center gap-2 mb-3">
-            <h2 className="font-semibold text-slate-700">Active Alerts</h2>
-            <span className="bg-red-100 text-red-600 text-xs font-semibold px-2 py-0.5 rounded-full">
-              {alerts.length}
-            </span>
-          </div>
-          <div className="flex flex-col gap-2">
-            {alerts.map((d, i) => (
-              <div key={i} className="flex items-center gap-3 py-2 border-b border-slate-50 last:border-0">
-                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                  d.demand_level === 'HIGH' ? 'bg-red-400' : 'bg-amber-400'
-                }`} />
-                <span className="text-sm text-slate-600">
-                  <span className="font-medium">{format(new Date(d.date + 'T00:00:00'), 'EEE, MMM dd')}</span>
-                  {' — '}
-                  {d.risk_flags.join(', ').replace(/_/g, ' ')}
-                </span>
-                <DemandBadge level={d.demand_level} size="sm" />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

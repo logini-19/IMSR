@@ -43,5 +43,59 @@
     "status": "COMPLETED",
     "train_loss": 0.6158,
     "val_loss": 433.81
+  },
+  {
+    "round_number": 1,
+    "started_at": "2026-05-19T05:36:00.102026",
+    "completed_at": "2026-05-19T05:36:00.103422",
+    "participating_nodes": 1,
+    "status": "COMPLETED",
+    "train_loss": 0.5696,
+    "val_loss": 422.99
+  },
+  {
+    "round_number": 2,
+    "started_at": "2026-05-19T05:36:00.103430",
+    "completed_at": "2026-05-19T05:36:00.104566",
+    "participating_nodes": 1,
+    "status": "COMPLETED",
+    "train_loss": 0.5303,
+    "val_loss": 413.9
+  },
+  {
+    "round_number": 3,
+    "started_at": "2026-05-19T05:36:00.104601",
+    "completed_at": "2026-05-19T05:36:00.106963",
+    "participating_nodes": 1,
+    "status": "COMPLETED",
+    "train_loss": 0.4967,
+    "val_loss": 406.25
+  },
+  {
+    "round_number": 1,
+    "started_at": "2026-05-19T05:36:14.373001",
+    "completed_at": "2026-05-19T05:36:14.375577",
+    "participating_nodes": 1,
+    "status": "COMPLETED",
+    "train_loss": 0.5353,
+    "val_loss": 15.28
+  },
+  {
+    "round_number": 2,
+    "started_at": "2026-05-19T05:36:14.375614",
+    "completed_at": "2026-05-19T05:36:14.377659",
+    "participating_nodes": 1,
+    "status": "COMPLETED",
+    "train_loss": 0.5177,
+    "val_loss": 15.11
+  },
+  {
+    "round_number": 3,
+    "started_at": "2026-05-19T05:36:14.377682",
+    "completed_at": "2026-05-19T05:36:14.379072",
+    "participating_nodes": 1,
+    "status": "COMPLETED",
+    "train_loss": 0.5025,
+    "val_loss": 14.97
   }
 ]

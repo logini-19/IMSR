@@ -1,15 +1,12 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, TrendingUp, CalendarDays,
-  Users, Network,
 } from 'lucide-react'
 
 const links = [
   { to: '/',        icon: LayoutDashboard, label: 'Overview' },
   { to: '/forecast', icon: TrendingUp,      label: 'Forecast' },
   { to: '/leave',    icon: CalendarDays,    label: 'Leave Planner' },
-  { to: '/workload', icon: Users,           label: 'Workload' },
-  { to: '/fl',       icon: Network,         label: 'FL Status' },
 ]
 
 export function Sidebar() {

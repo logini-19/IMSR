@@ -10,3 +10,8 @@ body {
 #root {
   min-height: 100vh;
 }
+
+.demand-high, .demand-mod, .demand-low { position: relative; }
+.demand-high::after { content: ""; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background-color: #EF4444; }
+.demand-mod::after { content: ""; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background-color: #F59E0B; }
+.demand-low::after { content: ""; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background-color: #22C55E; }

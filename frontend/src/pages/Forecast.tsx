@@ -48,9 +48,7 @@ export function Forecast() {
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
-        {/* Line chart */}
-        <div className="col-span-2 bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+      <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold text-slate-700">OP + IP Forecast with Confidence Band</h2>
             <span className="text-sm text-slate-400">Avg {avgForecast} pts/day</span>
@@ -73,43 +71,6 @@ export function Forecast() {
             </LineChart>
           </ResponsiveContainer>
         </div>
-
-        {/* Insight panel */}
-        <InsightCard
-          title="Forecast Confidence"
-          subtitle="Model accuracy and signal breakdown"
-          footer="Prophet + XGBoost ensemble. No patient data transmitted."
-        >
-          <div className="flex flex-col gap-3">
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-blue-700 rounded-xl p-3">
-                <div className="text-white text-lg font-bold">6.2%</div>
-                <div className="text-blue-300 text-xs">XGBoost MAPE</div>
-              </div>
-              <div className="bg-blue-700 rounded-xl p-3">
-                <div className="text-white text-lg font-bold">7.6%</div>
-                <div className="text-blue-300 text-xs">Prophet MAPE</div>
-              </div>
-              <div className="bg-blue-700 rounded-xl p-3">
-                <div className="text-white text-lg font-bold">80%</div>
-                <div className="text-blue-300 text-xs">Confidence band</div>
-              </div>
-              <div className="bg-blue-700 rounded-xl p-3">
-                <div className="text-white text-lg font-bold">28d</div>
-                <div className="text-blue-300 text-xs">Horizon</div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 mt-1">
-              <div className="text-blue-200 text-xs font-semibold uppercase tracking-wide">Signal Weights</div>
-              <InfluenceBar label="Historical patterns" value={38} />
-              <InfluenceBar label="Environmental"       value={24} />
-              <InfluenceBar label="Institutional load"  value={18} />
-              <InfluenceBar label="Seasonal trends"     value={12} />
-              <InfluenceBar label="Demand dynamics"     value={8}  />
-            </div>
-          </div>
-        </InsightCard>
-      </div>
 
       {/* Calendar heatmap */}
       <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
